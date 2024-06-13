@@ -1,0 +1,11 @@
+{
+  "name": "node-red",
+  "version": "3.1.10",
+  "dependencies": {
+    "node-red": "^3.1.10",
+    "node-red-contrib-ui-actions": "^0.1.8",
+    "node-red-contrib-ui-level": "^0.1.46",
+    "node-red-dashboard": "^3.6.5",
+    "node-red-node-ui-table": "^0.4.3"
+  }
+}

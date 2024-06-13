@@ -23,10 +23,19 @@ grade: stable
 confinement: strict
 
 parts:
+  nodered:
+    plugin: npm
+    source: node-red
+    npm-include-node: true
+    npm-node-version: 22.1.0
+    override-build: |
+      craftctl default
+      npm install
   edm:
     plugin: python
     source: https://github.com/EVerest/everest-dev-environment.git
     source-subdir: dependency_manager
+    after: [ nodered ]
     # do not ship pycache in the snap, instead we'll point 
     # PYTHONPYCACHEPREFIX to $SNAP_COMMON at runtime later to generate
     # the files on first start
@@ -49,7 +58,7 @@ parts:
   everest:
     plugin: cmake
     source: https://github.com/EVerest/everest-core.git
-    after: [ edm, ev-cli ]
+    after: [ nodered, edm, ev-cli ]
     build-environment:
       - CPM_SOURCE_CACHE: $CRAFT_STAGE/.cache/CPM
       - PATH: $PATH:$CRAFT_STAGE/.local/bin
@@ -73,8 +82,8 @@ parts:
       - libevent-dev
       - pkg-config
       - libcap-dev
-      - nodejs
-      - npm
+        #      - nodejs
+        #      - npm
     stage-packages:
       - libboost-filesystem1.74.0
       - libboost-log1.74.0
@@ -86,7 +95,17 @@ parts:
       - libevent-pthreads-2.1-7
       - libicu70
       - libpcap0.8
+    organize:
+      root/everest/parts/everest/build/dist/bin: usr/bin
+      root/everest/parts/everest/build/dist/share: usr/share
+      root/everest/parts/everest/build/dist/lib: usr/lib
+      root/everest/parts/everest/build/dist/libexec: usr/libexec
+      root/everest/parts/everest/build/dist/include: usr/include
+      root/everest/parts/everest/build/dist/etc: etc
     prime:
       - -usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libicuio.so.70.1
       - -usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libicutest.so.70.1
       - -usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libicutu.so.70.1
+      - -root
+      - -usr/share/lintian
+      - -usr/share/man
