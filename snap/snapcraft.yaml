@@ -62,7 +62,9 @@ parts:
     build-environment:
       - CPM_SOURCE_CACHE: $CRAFT_STAGE/.cache/CPM
       - PATH: $PATH:$CRAFT_STAGE/.local/bin
-        #- NODEJS_INCLUDE_DIR: /snap/node/current/include
+    cmake-parameters:
+      - -DCMAKE_INSTALL_PREFIX=/usr
+      - -DCMAKE_INSTALL_SYSCONFDIR=/etc
     build-packages:
       - rsync
       - wget
@@ -82,8 +84,6 @@ parts:
       - libevent-dev
       - pkg-config
       - libcap-dev
-        #      - nodejs
-        #      - npm
     stage-packages:
       - libboost-filesystem1.74.0
       - libboost-log1.74.0
@@ -95,17 +95,10 @@ parts:
       - libevent-pthreads-2.1-7
       - libicu70
       - libpcap0.8
-    organize:
-      root/everest/parts/everest/build/dist/bin: usr/bin
-      root/everest/parts/everest/build/dist/share: usr/share
-      root/everest/parts/everest/build/dist/lib: usr/lib
-      root/everest/parts/everest/build/dist/libexec: usr/libexec
-      root/everest/parts/everest/build/dist/include: usr/include
-      root/everest/parts/everest/build/dist/etc: etc
     prime:
       - -usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libicuio.so.70.1
       - -usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libicutest.so.70.1
       - -usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libicutu.so.70.1
-      - -root
+      - -share
       - -usr/share/lintian
       - -usr/share/man
