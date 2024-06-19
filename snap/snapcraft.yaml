@@ -45,6 +45,8 @@ layout:
     bind: $SNAP/usr/share/everest
   /usr/libexec/everest:
     bind: $SNAP/usr/libexec/everest
+  /usr/bin/systemctl:
+    bind-file: $SNAP/usr/bin/systemctl
 
 parts:
   nodered:
@@ -139,3 +141,34 @@ parts:
       mkdir -p $CRAFT_PART_INSTALL/etc
       sed 's/#user.*/user root/' $CRAFT_PART_SRC/docker/mosquitto/mosquitto.conf > \
           $CRAFT_PART_INSTALL/etc/mosquitto.conf
+  python-helpers:
+    plugin: python
+    source: .
+    python-packages:
+      - pydantic==1.10.9
+      - environs
+      - psutil
+      - aiofile
+      - cryptography
+      - netifaces
+    stage:
+      - lib/python3.10/site-packages/pydantic*
+      - lib/python3.10/site-packages/annotated*
+      - lib/python3.10/site-packages/typing*
+      - lib/python3.10/site-packages/environs*
+      - lib/python3.10/site-packages/marshmallow*
+      - lib/python3.10/site-packages/packaging*
+      - lib/python3.10/site-packages/dotenv*
+      - lib/python3.10/site-packages/psutil*
+      - lib/python3.10/site-packages/aiofile*
+      - lib/python3.10/site-packages/caio*
+      - lib/python3.10/site-packages/cryptography*
+      - lib/python3.10/site-packages/cffi*
+      - lib/python3.10/site-packages/_cffi_backend*
+      - lib/python3.10/site-packages/pycparser*
+      - lib/python3.10/site-packages/netifaces*
+  systemctl:
+    plugin: dump
+    source: systemctl
+    organize:
+      systemctl: usr/bin/systemctl
