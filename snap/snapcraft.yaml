@@ -22,6 +22,30 @@ description: |
 grade: stable
 confinement: strict
 
+apps:
+  mosquitto:
+    command: usr/sbin/mosquitto -c $SNAP/etc/mosquitto.conf
+    daemon: simple
+    plugs:
+      - network
+      - network-bind
+  manager:
+    command: usr/bin/manager --prefix /usr --conf /etc/everest/config-sil.yaml
+    environment:
+      NODE_PATH: $SNAP/usr/lib/everest/node_modules
+    plugs:
+      - home
+      - network
+      - network-bind
+
+layout:
+  /etc/everest:
+    bind: $SNAP/etc/everest
+  /usr/share/everest:
+    bind: $SNAP/usr/share/everest
+  /usr/libexec/everest:
+    bind: $SNAP/usr/libexec/everest
+
 parts:
   nodered:
     plugin: npm
@@ -31,6 +55,8 @@ parts:
     override-build: |
       craftctl default
       npm install
+    prime:
+      - -share
   edm:
     plugin: python
     source: https://github.com/EVerest/everest-dev-environment.git
@@ -95,10 +121,21 @@ parts:
       - libevent-pthreads-2.1-7
       - libicu70
       - libpcap0.8
+    organize:
+      usr/lib/everest/everestpy/everest: lib/python3.10/site-packages/everest
     prime:
+      - -usr/lib/everest/everestpy
       - -usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libicuio.so.70.1
       - -usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libicutest.so.70.1
       - -usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libicutu.so.70.1
-      - -share
       - -usr/share/lintian
       - -usr/share/man
+  utils:
+    plugin: nil
+    source: https://github.com/EVerest/everest-utils.git
+    stage-packages:
+      - mosquitto
+    override-build: |
+      mkdir -p $CRAFT_PART_INSTALL/etc
+      sed 's/#user.*/user root/' $CRAFT_PART_SRC/docker/mosquitto/mosquitto.conf > \
+          $CRAFT_PART_INSTALL/etc/mosquitto.conf
