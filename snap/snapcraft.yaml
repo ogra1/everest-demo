@@ -141,16 +141,11 @@ parts:
       mkdir -p $CRAFT_PART_INSTALL/etc
       sed 's/#user.*/user root/' $CRAFT_PART_SRC/docker/mosquitto/mosquitto.conf > \
           $CRAFT_PART_INSTALL/etc/mosquitto.conf
-  python-helpers:
+  python-deps:
     plugin: python
-    source: .
-    python-packages:
-      - pydantic==1.10.9
-      - environs
-      - psutil
-      - aiofile
-      - cryptography
-      - netifaces
+    source: python-deps
+    python-requirements:
+      - requirements.txt
     stage:
       - lib/python3.10/site-packages/pydantic*
       - lib/python3.10/site-packages/annotated*

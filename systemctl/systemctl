@@ -1,3 +1,22 @@
 #! /bin/sh
 
-true
+service="$(echo $@|sed 's/^.* //')"
+
+case $1 in
+	is-active)
+		if snapctl services $SNAP_NAME.$service 2>/dev/null | grep -q " active "; then
+			return 0
+		else
+			return 3
+		fi
+		;;
+	start)
+		snapctl start $SNAP_NAME.$service 2>/dev/null
+		;;
+	stop)
+		snapctl stop $SNAP_NAME.$service 2>/dev/null
+		;;
+	*)
+		logger -t everest -- "error: unknown snapctl command: $1"
+		;;
+esac
