@@ -17,6 +17,6 @@ case $1 in
 		snapctl stop $SNAP_NAME.$service 2>/dev/null
 		;;
 	*)
-		logger -t everest -- "error: unknown snapctl command: $1"
+		logger -t $SNAP_NAME -- "error: unknown snapctl command: $1"
 		;;
 esac
