@@ -33,8 +33,16 @@ apps:
     command: usr/bin/manager --prefix /usr --conf /etc/everest/config-sil.yaml
     environment:
       NODE_PATH: $SNAP/usr/lib/everest/node_modules
+    daemon: simple
+    after: [ mosquitto ]
     plugs:
-      - home
+      - network
+      - network-bind
+  node-red:
+    command: bin/node-red /etc/everest/nodered/config-sil-flow.json
+    daemon: simple
+    after: [ manager ]
+    plugs:
       - network
       - network-bind
 
@@ -57,6 +65,9 @@ parts:
     override-build: |
       craftctl default
       npm install
+      mkdir -p $CRAFT_PART_INSTALL/lib
+      cp -av node_modules $CRAFT_PART_INSTALL/lib/
+      ln -s ../lib/node_modules/node-red/red.js $CRAFT_PART_INSTALL/bin/node-red
     prime:
       - -share
   edm:
@@ -123,6 +134,10 @@ parts:
       - libevent-pthreads-2.1-7
       - libicu70
       - libpcap0.8
+    override-build: |
+      craftctl default
+      mkdir -p $CRAFT_PART_INSTALL/etc/everest/nodered
+      cp -av $CRAFT_PART_SRC/config/nodered/*.json $CRAFT_PART_INSTALL/etc/everest/nodered/
     organize:
       usr/lib/everest/everestpy/everest: lib/python3.10/site-packages/everest
     prime:
